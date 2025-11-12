@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signup - Fashion Quiz</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Sign Up</h1>
+    <input type="text" id="name" placeholder="Enter your name" /><br><br>
+    <input type="email" id="email" placeholder="Enter your email" /><br><br>
+    <button class="next-btn" onclick="signup()">Sign Up</button>
+    <p id="msg"></p>
+  </div>
+
+  <script>
+    async function signup() {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const msg = document.getElementById("msg");
+
+      if (!name || !email) {
+        msg.textContent = "Please fill all fields!";
+        return;
+      }
+
+      try {
+        const res = await fetch("/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email })
+        });
+
+        const data = await res.json();
+        msg.textContent = data.message;
+        console.log("Signup response:", data);
+
+        if (res.ok) {
+          localStorage.setItem("userEmail", email);
+          msg.style.color = "green";
+
+          // Delay redirect so message is visible
+          setTimeout(() => {
+            window.location.href = "/index.html";
+          }, 1000);
+        } else {
+          msg.style.color = "red";
+        }
+      } catch (error) {
+        console.error("Error during signup:", error);
+        msg.textContent = "Server not reachable!";
+        msg.style.color = "red";
+      }
+    }
+  </script>
+</body>
+</html>
